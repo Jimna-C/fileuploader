@@ -1,0 +1,205 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript" src="script.js" defer></script>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="//db.onlinewebfonts.com/c/84cb021d5f9af287ffff84b61beef6dc?family=clockicons" rel="stylesheet" type="text/css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-duration-format/1.3.0/moment-duration-format.min.js"></script>
+</head>
+<body>
+    <div class="zone">
+
+        <div id="dropZ">
+          <i class="fa fa-cloud-upload"></i>
+          <div>Drag and drop your files here</div> <br>                   
+          <span>OR</span><br>
+          <div class="selectFile" id="droppingzone">       
+            <label for="file">Select file</label>                   
+            <input type="file" id="file" multiple="multiple" onchange="preview()">
+          </div>
+          <p>File size limit : 1 MB</p>
+        </div>
+      </div>
+      <div id="presentationdiv">
+        <table role="presentation" class="table table-striped" id="tb">
+            <tbody class="files" id="outputdiv">
+               
+        </tbody>
+          </table>
+          <button type="submit" class="upload-btn" >Upload</button>
+      </div>
+
+
+      <section id="popup" class="popup">
+  <div class="popup-sub">
+    <i class="fa fa-times-circle-o" aria-hidden="true"></i>
+    <span>OOPS!</span>
+    <p>File size Greater than 1MiB!</p>
+    <button id="pop-ok" onclick="popclose()">Ok</button>
+  </div>
+      </section>
+      <script>
+
+        const output = document.querySelector("outputdiv");
+        const input = document.querySelector("#file");
+        var imagesArray = [];
+       var files ={};
+        
+        function preview() {
+            //$("#presentationdiv").show();
+            // validateSize(image,index);
+            var files = input.files;
+            
+              console.log(files);
+                for (var i=0; i < files.length; i++) {
+                //     imagesArray.push(files[i]);
+                 
+                displayImages(files,i);
+                //console.log(files);
+               
+                //console.log(i);
+                }
+            //console.log(imagesArray);
+           
+        }
+        ///////////////////////////////////////////////////////
+        var dropZone = document.getElementById('droppingzone');
+
+// Optional.   Show the copy icon when dragging over.  Seems to only work for chrome.
+dropZone.addEventListener('dragover', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+});
+
+// Get file data on drop
+dropZone.addEventListener('drop', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+     var dropfileslist=e.dataTransfer.files; // Array of all files
+   // console.log(dropfileslist);
+    //  imagesArray.push(dropfileslist[0]);
+    //  console.log(imagesArray);
+    // displayImages(dropfileslist);
+  
+    for ( var i = 0; i < dropfileslist.length; i++) {
+                //     imagesArray.push(files[i]);
+                displayImages(dropfileslist,i);
+                }
+    
+});
+// <div id="danger" class="text-danger">File is too large</div>
+///////////////////////////////////////////////////////////////////////////////
+        const reader = new FileReader();
+        var images={}
+    function displayImages(files,i) {
+     console.log(files[i]);
+      $("#presentationdiv").show();
+//   let images = ""
+
+//   imagesArray.forEach((image, index) => {
+  //console.log(image);
+//  validateSize(image,index);
+// for(var j=0;j<files.length;j++){
+// console.log(files[0],files[1]);
+// }
+    images = `<tr class="template-upload fade in" id="trdiv`+i+`">
+                <td width=25% class="image">
+                    <img  src="${URL.createObjectURL(files[i])}" class="img">
+                </td>
+                <td width="32%" id="danger">
+                    <p class="name" id=namearray"">${files[i].name}</p>
+                    
+                </td>
+                <td width="22%">
+                    <p class="size">${(files[i].size/1024/1024).toFixed(2)}MB</p>
+                    <div class="progress" id="myProgress">
+                        <div id="myBar`+i+`" class="myBar"></div>
+                </td>
+                <td class="presbtns">
+                        <input type="checkbox" name="complete" id="complete`+i+`" checked style="display:none">
+                        <button class="btn btn-warning cancel" id="remove_btn" onclick="removeRow(this)">
+                            <i class="fa fa-trash-o"></i>
+                        </button>
+                    
+                </td>
+            </tr>`
+              var fileSize = files[i].size/1024/1024; // in MiB
+           // console.log(fileSize.toFixed(2));
+  if (fileSize.toFixed(2) >1) {
+  // alert('File size Greater then 1MiB!');
+    $("#popup").show();
+  }
+  else{
+    $("#outputdiv").append(images);
+   move(i);
+   
+    
+    
+   
+    // var elem = document.getElementById("myBar");
+    // var width = 1;
+    // var id = setInterval(frame, 10);
+    // function frame() {
+    //   if (width >= 100) {
+    //     clearInterval(id);
+    //     $('#complete').show();
+    //   } else {
+    //     width++;
+    //     elem.style.width = width + "%";
+    //   }
+    // }
+  }
+
+}
+
+
+function move(i) {
+   console.log(i);
+    var elem = document.getElementById("myBar"+i);
+    var width = 1;
+    var id = setInterval(frame, 10);
+    function frame() {
+      if (width >= 100) {
+        clearInterval(id);
+        $("#complete"+i).show();
+       // $('#file'). val('');
+       // i='';
+      } else {
+        width++;
+        elem.style.width = width + "%";
+       // i='';
+       
+      }
+    }
+  }
+
+function removeRow(par) {
+//console.log(par);
+$(par).closest('tr').remove();
+}
+
+
+// function move() {
+// //     var table = document.getElementsByTagName('table')[0];
+// // var rows = table.rows;
+// // for (var i = 0; i < rows.length; i++) {
+// //    // console.log(rows[i]);
+// //    console.log($(rows[i]).find('td:nth-child(3)').find('div').eq(1).attr("id")) ;
+// // } 
+
+//    //var x = document.getElementById("tb").rows.length;
+  
+// }
+
+function popclose(){
+document.getElementById("popup").style.display="none";
+}    
+
+</script>
+</body>
+</html>
